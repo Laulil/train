@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>弹幕墙</title>
+    <style>
+            :root {
+        --bg: #0b0f1a;
+        --panel: #121828;
+        --text: #e6e9ef;
+        --muted: #94a3b8;
+        --accent: #7c93ff;
+        --lane-height: 42px;
+        --gap: 24px;
+    }
+    * {
+        box-sizing: border-box;
+    }
+    html, body {
+        height: 100%; margin: 0;
+    }
+    body {
+        background: var(--bg);
+        color: vaar(--text);
+        font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetice, Arial;
+    }
+    .wrap {
+        min-height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+    }
+    .toolbar {
+        position: sticky; top: 0;
+        display: grid;
+        gap: 8px;
+        grid-template-columns: 1fr auto auto auto auto auto;
+        align-items: center;
+        padding: 12px;
+        background: color-fix(in oklab, var(--panel) 82%, transparent);
+        backdrop-filter: saturate(1.2) blur(6px);
+        border-bottom: 1px solid rgba(255, 255, 255, .06)
+    }
+    .toolbar input[type="text"] {
+        height: 40px;
+        padding: 0 12px;
+        border-radius: 12px;
+        background: #0f1424;
+        border: 1px solid #253152;
+        color: var(--text);
+    }
+    .toolbar input[type="color"], .toolbar select, .btn {
+        height: 40px;
+        border-radius: 12px;
+        border: 1px solid #253152;
+        background: #0f1424;
+        color: var(--text);
+        padding: 0 10px;
+    }
+    .btn {
+        background: var(--accent);
+        color: #0b0f1a;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn:disabled {
+        opacity: 6;
+        cursor: not-allowed;
+    }
+    .stage {
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        margin: 12px;
+        min-height: 320px;
+        background: radial-gradient(1200px 600px at 30% -10%, #1b2551 0%, #0b0f1a 55%);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    }
+    .stage::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: .25;
+        user-select: none;
+    }
+    .bullet {
+        position: absolute;
+        white-space: nowrap;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .07);
+        border: 1px solid rgba(255, 255, 255, .08);
+        backdrop-filter: blur(2px);
+        will-change: transform;
+        pointer-events: auto;
+    }
+    .bullet:hover {
+        filter: brightness(1.12);
+    }
+    .status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        color: var(--muted);
+        font-size: 13px;
+        border-top: 1px solid rgba(255, 255, 255, .06);
+    }
+    .pill {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #0f1424;
+        border: 1px solid #253152;
+    }
+    .visually-hidden {
+        position: absolute !important;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        border: 0;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <header class="toolbar" aria-label="弹幕控制栏">
+            <label class="visually-hidden" for="msg">弹幕内容</label>
+            <input id="msg" type="text" placeholder="输入弹幕" maxlength="100"/>
+            <label class="visually-hidden" for="size">字号</label>
+            <select id="size" title="字号">
+                <option value="18">小</option>
+                <option vlaue="22" selected>中</option>
+                <option value="28">大</option>
+            </select> 
+            <label class="visually-hidden" for="speed">速度</label>
+            <select id="speed" title="速度">
+                <option value="120">慢</option>
+                <option value="180" selected>中</option>
+                <option value="260">快</option>
+            </select>
+            <button id="toggle" class="btn" aria-pressed="false">暂停</button>
+            <button id="send" class="btn" type="button">发送</button>
+            <main id="stage" class="stage" aria-live="polite" aria-label="弹幕舞台"></main>
+            <footer class="status" aria-label="状态栏">
+                <div class="pill">轨道: <strong id="lanes">-</strong>条</div>
+                <div class="pill">活动弹幕:<strong id="active">0</strong></div>
+                <div class="pill">FPS:<strong id="fps">0</strong></div>
+            </footer>
+        </header>
+    </div>
+</body>
+</html>
